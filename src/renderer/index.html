@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Content-Security-Policy: locks the page down so it can only load its
+         own local resources. Good hygiene for an Electron app. -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'"
+    />
+    <title>Pomo Electron</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="titlebar">
+        <span class="logo">🍅</span>
+        <h1>Pomo Electron</h1>
+      </header>
+
+      <!-- ============ CONFIG SCREEN ============ -->
+      <section id="config-screen" class="screen">
+        <div class="card">
+          <div class="grid">
+            <label>
+              Work session (min)
+              <input id="in-work" type="number" min="1" step="1" value="25" />
+            </label>
+            <label>
+              Total work hours
+              <input id="in-total" type="number" min="0.1" step="0.5" value="8" />
+            </label>
+            <label>
+              Short break (min)
+              <input id="in-break" type="number" min="0" step="1" value="5" />
+            </label>
+            <label>
+              Long break (min)
+              <input id="in-long" type="number" min="0" step="1" value="15" />
+            </label>
+            <label>
+              Sessions per long break
+              <input id="in-cycles" type="number" min="1" step="1" value="4" />
+            </label>
+            <label class="preset-field">
+              Preset total hours (optional)
+              <input id="in-preset" type="number" min="0" step="0.5" placeholder="off" />
+              <small
+                >Fits work + breaks into exactly N hours. Overrides break /
+                long / cycles.</small
+              >
+            </label>
+          </div>
+
+          <p id="config-error" class="error" hidden></p>
+
+          <button id="btn-start" class="primary big">Start session ▶</button>
+        </div>
+
+        <div class="card hint">
+          <strong>Keyboard shortcuts</strong>
+          <ul>
+            <li><kbd>S</kbd> pause/resume segment</li>
+            <li><kbd>W</kbd> pause/resume work-hours</li>
+            <li><kbd>B</kbd> pause/resume both</li>
+            <li><kbd>K</kbd> skip segment</li>
+            <li><kbd>H</kbd> hide/show segment timer</li>
+            <li><kbd>C</kbd> / <kbd>Space</kbd> continue to next</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ============ TIMER SCREEN ============ -->
+      <section id="timer-screen" class="screen" hidden>
+        <div class="card timer-card">
+          <div id="segment-label" class="segment-label">Work Session #1</div>
+
+          <div id="big-time" class="big-time">25:00</div>
+          <div id="paused-badge" class="badge" hidden>PAUSED</div>
+
+          <div class="ring-wrap">
+            <div id="segment-bar" class="bar">
+              <div id="segment-bar-fill" class="bar-fill"></div>
+            </div>
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <span class="stat-label">Work hours left</span>
+              <span id="work-left" class="stat-value">08:00:00</span>
+              <span id="work-note" class="stat-note"></span>
+            </div>
+          </div>
+
+          <div class="workday">
+            <span class="stat-label">Work day progress</span>
+            <div class="bar tall">
+              <div id="workday-bar-fill" class="bar-fill work"></div>
+            </div>
+            <span id="workday-pct" class="pct">0%</span>
+          </div>
+
+          <div class="cycle-row" id="cycle-row"></div>
+          <div class="legend">🍅 work &nbsp; ☕ short &nbsp; 🌙 long &nbsp; [ ] current</div>
+
+          <div id="preset-info" class="preset-info" hidden></div>
+        </div>
+
+        <!-- Controls -->
+        <div class="card controls">
+          <div id="running-controls">
+            <button data-action="segment" title="Pause/resume segment (S)">⏸ Seg</button>
+            <button data-action="workday" title="Pause/resume work-hours (W)">⏸ Work</button>
+            <button data-action="both" title="Pause/resume both (B)">⏸ Both</button>
+            <button data-action="skip" title="Skip segment (K)">⏭ Skip</button>
+            <button data-action="hide" title="Hide/show segment timer (H)">👁 Hide</button>
+          </div>
+          <div id="gate-controls" hidden>
+            <div class="gate-msg">Segment complete.</div>
+            <button data-action="continue" class="primary big" title="C / Space">
+              Continue ▶
+            </button>
+          </div>
+          <button data-action="reset" class="ghost">■ Stop / new session</button>
+        </div>
+      </section>
+
+      <!-- ============ DONE SCREEN ============ -->
+      <section id="done-screen" class="screen" hidden>
+        <div class="card done-card">
+          <div class="done-emoji">🎉</div>
+          <h2>Work hours complete!</h2>
+          <p>Nice work.</p>
+          <button data-action="reset" class="primary big">New session</button>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span id="version">v…</span>
+        <button id="whats-new" class="link" hidden>What's new</button>
+      </footer>
+
+      <!-- ============ WHAT'S NEW MODAL ============ -->
+      <div id="changelog-modal" class="modal" hidden>
+        <div class="modal-card">
+          <div class="modal-head">
+            <strong>What's new</strong>
+            <button id="changelog-close" class="modal-close" title="Close">✕</button>
+          </div>
+          <div id="changelog-body" class="modal-body"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Plain script tags, no bundler. engine.js must load before app.js. -->
+    <script src="engine.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
