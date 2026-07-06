@@ -9,6 +9,16 @@ features, **PATCH** for fixes.
 Entries are intentionally kept high-level and user-facing (no internal or
 security-sensitive detail). Newest version on top.
 
+## [1.2.1] — 2026-07-06
+
+### Changed
+- Describe the user-facing changes here (keep it high-level, no sensitive detail).
+
+## [1.2.0] — 2026-07-06
+
+### Changed
+- Describe the user-facing changes here (keep it high-level, no sensitive detail).
+
 ## [1.1.0] — 2026-07-06
 
 ### Added
