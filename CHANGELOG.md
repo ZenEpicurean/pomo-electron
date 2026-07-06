@@ -9,12 +9,15 @@ features, **PATCH** for fixes.
 Entries are intentionally kept high-level and user-facing (no internal or
 security-sensitive detail). Newest version on top.
 
-## [1.2.1] — 2026-07-06
+## [1.2.1] - 2026-07-06
 
-### Changed
-- Describe the user-facing changes here (keep it high-level, no sensitive detail).
+### Added
+- Fully automated deployment flow, and added Github task to automatically create a release on updates. 
 
-## [1.2.0] — 2026-07-06
+## [1.1.1] — 2026-07-06
+
+### Added
+- Added workflow changes to automate deployment, versioning and change logs.
 
 ### Changed
 - Describe the user-facing changes here (keep it high-level, no sensitive detail).
