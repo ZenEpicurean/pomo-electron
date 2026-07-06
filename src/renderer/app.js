@@ -32,6 +32,15 @@ function fmt(ms) {
   return [h, m, s].map((n) => String(n).padStart(2, '0')).join(':');
 }
 
+// Human-friendly duration for the stats view: "3h 20m", "45m", or "0m".
+function fmtHuman(ms) {
+  const totalMin = Math.floor(Math.max(0, ms) / 60000);
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+  if (h > 0) return h + 'h ' + m + 'm';
+  return m + 'm';
+}
+
 // Compact clock for the big headline timer: drop the hours field when under
 // an hour so a 25-minute segment reads "25:00", not "00:25:00".
 function fmtClock(ms) {
@@ -78,7 +87,39 @@ function segIcon(type) {
 // ---------------------------------------------------------------------------
 const engine = new window.TimerEngine(render, beep);
 
+// ---------------------------------------------------------------------------
+// Focus-stats tracking. We derive activity from the engine snapshots rather
+// than reaching into the engine: whenever the work-hours countdown drops, that
+// delta is focused-work time; a work segment reaching the gate is a completed
+// session. PomoStats persists both to localStorage.
+// ---------------------------------------------------------------------------
+let lastWorkRemaining = null;
+let prevPhase = null;
+function trackStats(s) {
+  if (!window.PomoStats) return;
+  if (
+    lastWorkRemaining != null &&
+    s.workHoursRemainingMs != null &&
+    s.workHoursRemainingMs < lastWorkRemaining
+  ) {
+    window.PomoStats.addWork(lastWorkRemaining - s.workHoursRemainingMs);
+  }
+  lastWorkRemaining = s.workHoursRemainingMs;
+
+  if (
+    prevPhase === Phase.RUNNING &&
+    s.phase === Phase.GATE &&
+    s.segment &&
+    s.segment.countsAsWork
+  ) {
+    window.PomoStats.addSession();
+  }
+  prevPhase = s.phase;
+}
+
 function render(s) {
+  trackStats(s);
+
   // Pick which screen is visible based on the engine phase.
   const onConfig = s.phase === Phase.IDLE;
   const onDone = s.phase === Phase.DONE;
@@ -349,10 +390,63 @@ if (window.pomo && window.pomo.getChangelog) {
   changelogModal.addEventListener('click', (e) => {
     if (e.target === changelogModal) closeChangelog();
   });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeChangelog();
-  });
 }
+
+// ---------------------------------------------------------------------------
+// "Your focus stats" modal — reads from PomoStats (localStorage).
+// ---------------------------------------------------------------------------
+const statsModal = $('#stats-modal');
+
+function renderStats() {
+  const st = window.PomoStats;
+  if (!st) return;
+  const week = st.thisWeek();
+  $('#stat-week-time').textContent = fmtHuman(week.workMs);
+  $('#stat-week-sessions').textContent =
+    week.sessions + (week.sessions === 1 ? ' session' : ' sessions');
+
+  const recent = st.recentWeeks(8);
+  const maxMs = Math.max(1, ...recent.map((w) => w.workMs));
+  const container = $('#stat-weeks');
+  if (recent.length === 0) {
+    container.innerHTML = '<div class="stat-weeks-empty">No focused time recorded yet — start a session!</div>';
+  } else {
+    container.innerHTML = recent
+      .map((w) => {
+        const pct = Math.round((w.workMs / maxMs) * 100);
+        return (
+          '<div class="stat-week-row">' +
+          '<span class="wk">' + w.week + '</span>' +
+          '<span class="bar"><span class="bar-fill work" style="width:' + pct + '%"></span></span>' +
+          '<span class="val">' + fmtHuman(w.workMs) + '</span>' +
+          '</div>'
+        );
+      })
+      .join('');
+  }
+
+  const life = st.lifetime();
+  $('#stat-lifetime-time').textContent = fmtHuman(life.workMs);
+  $('#stat-lifetime-sessions').textContent =
+    life.sessions + (life.sessions === 1 ? ' session' : ' sessions');
+}
+
+function openStats() { renderStats(); show(statsModal); }
+function closeStats() { hide(statsModal); }
+
+$('#open-stats').addEventListener('click', openStats);
+$('#stats-close').addEventListener('click', closeStats);
+statsModal.addEventListener('click', (e) => {
+  if (e.target === statsModal) closeStats();
+});
+
+// Escape closes whichever modal is open.
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeChangelog();
+    closeStats();
+  }
+});
 
 // Initial paint (config screen).
 render(engine.snapshot());

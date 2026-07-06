@@ -1,6 +1,6 @@
 {
   "name": "pomo-electron",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "A Pomodoro timer with a work-hours budget, cycle visualization, and flexible pause controls.",
   "author": "David Hamm",
   "license": "MIT",

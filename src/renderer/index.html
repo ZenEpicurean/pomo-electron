@@ -137,6 +137,7 @@
 
       <footer class="footer">
         <span id="version">v…</span>
+        <button id="open-stats" class="link">Stats</button>
         <button id="whats-new" class="link" hidden>What's new</button>
       </footer>
 
@@ -150,10 +151,33 @@
           <div id="changelog-body" class="modal-body"></div>
         </div>
       </div>
+
+      <!-- ============ STATS MODAL ============ -->
+      <div id="stats-modal" class="modal" hidden>
+        <div class="modal-card">
+          <div class="modal-head">
+            <strong>Your focus stats</strong>
+            <button id="stats-close" class="modal-close" title="Close">✕</button>
+          </div>
+          <div class="modal-body">
+            <div class="stat-hero">
+              <div class="stat-hero-label">This week</div>
+              <div id="stat-week-time" class="stat-hero-value">0m</div>
+              <div id="stat-week-sessions" class="stat-hero-sub">0 sessions</div>
+            </div>
+            <div id="stat-weeks" class="stat-weeks"></div>
+            <div class="stat-lifetime">
+              All time: <span id="stat-lifetime-time">0m</span>
+              · <span id="stat-lifetime-sessions">0 sessions</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Plain script tags, no bundler. engine.js must load before app.js. -->
     <script src="engine.js"></script>
+    <script src="stats.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

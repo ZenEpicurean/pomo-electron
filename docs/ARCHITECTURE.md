@@ -13,13 +13,15 @@ Pomo-Electron/
 │     ├─ index.html      Page structure: config / timer / done screens
 │     ├─ styles.css      All styling + theme variables (top of file)
 │     ├─ engine.js       TimerEngine: ALL the Pomodoro logic (no DOM)
+│     ├─ stats.js        PomoStats: focus stats saved in localStorage
 │     └─ app.js          Glue: reads the form, renders state, handles keys
 ├─ build/
 │  ├─ icon.ico / icon.png  App icon (exe + window)
 │  └─ gen-icon.js          Regenerates the icons (node build/gen-icon.js)
 ├─ CHANGELOG.md          Version history (shown in the app's "What's new")
 ├─ scripts/
-│  └─ release.js         Bumps version + scaffolds a CHANGELOG entry
+│  ├─ release.js         Bumps version + scaffolds a CHANGELOG entry
+│  └─ changelog-notes.js Extracts one version's notes for the release workflow
 ├─ docs/                 These docs
 └─ release/              Build output (generated; git-ignored)
 ```
@@ -68,6 +70,7 @@ segment hits zero.
 | Expose a Node feature (files, notifications) to the UI | add to `preload.js` + a handler in `main.js` (see below) |
 | Change app name / version / build targets              | `package.json`                                           |
 | Add a release note / version history entry             | `CHANGELOG.md` (see BUILD.md §5)                          |
+| Change what focus stats are tracked / stored           | `src/renderer/stats.js` (localStorage, userData-backed)  |
 
 ## Adding a native feature (IPC pattern)
 

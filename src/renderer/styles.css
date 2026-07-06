@@ -479,3 +479,69 @@ kbd {
 .modal-body li {
   margin: 2px 0;
 }
+
+/* ---------- Stats modal ---------- */
+.stat-hero {
+  text-align: center;
+  padding: 6px 0 12px;
+}
+.stat-hero-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+}
+.stat-hero-value {
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  margin-top: 2px;
+}
+.stat-hero-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.stat-weeks {
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+}
+.stat-week-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  padding: 3px 0;
+}
+.stat-week-row .wk {
+  color: var(--muted);
+  flex: 0 0 auto;
+  min-width: 66px;
+  font-variant-numeric: tabular-nums;
+}
+.stat-week-row .bar {
+  flex: 1;
+  height: 8px;
+}
+.stat-week-row .val {
+  flex: 0 0 auto;
+  min-width: 54px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.stat-weeks-empty {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+  padding: 8px 0;
+}
+.stat-lifetime {
+  border-top: 1px solid var(--border);
+  margin-top: 8px;
+  padding-top: 8px;
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+}
