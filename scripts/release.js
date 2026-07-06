@@ -59,6 +59,19 @@ const next = `${maj}.${min}.${pat}`;
 
 fs.writeFileSync(pkgPath, pkgText.replace(m[0], `"version": "${next}"`));
 
+// keep package-lock.json's version in sync so CI's `npm ci` stays happy
+try {
+  const lockPath = path.join(root, 'package-lock.json');
+  if (fs.existsSync(lockPath)) {
+    const lock = JSON.parse(fs.readFileSync(lockPath, 'utf8'));
+    lock.version = next;
+    if (lock.packages && lock.packages['']) lock.packages[''].version = next;
+    fs.writeFileSync(lockPath, JSON.stringify(lock, null, 2) + '\n');
+  }
+} catch (e) {
+  console.warn('Note: could not update package-lock.json version:', e.message);
+}
+
 // --- 2) prepend a CHANGELOG.md stub above the newest existing entry ---
 const date = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 const stub =

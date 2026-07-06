@@ -207,6 +207,32 @@ minor --build=dist`.)
 at the top of `CHANGELOG.md` in the same shape as the existing entries, and
 rebuild. Follow [SemVer](https://semver.org/): `MAJOR.MINOR.PATCH`.
 
+### Automated releases (GitHub Actions)
+
+There's a workflow at `.github/workflows/release.yml` that publishes a GitHub
+Release for you. It triggers whenever a change to `package.json` is pushed to
+`main`; it reads the version, and **if no release for that version exists yet**
+it builds the portable exe on a Windows runner and creates the release (notes
+pulled from `CHANGELOG.md`, exe attached). If the release already exists it does
+nothing, so ordinary pushes are safe.
+
+So your zero-touch release flow becomes:
+
+```powershell
+npm run release:minor       # bump version + scaffold changelog (also syncs package-lock)
+#   …edit CHANGELOG.md with the real changes…
+git add -A
+git commit -m "Release 1.2.0"
+git push
+```
+
+Push, wait a few minutes, and the new release appears on GitHub — no local build
+needed. Watch it under the repo's **Actions** tab. (You can also run it by hand
+from that tab via "Run workflow".)
+
+> **Fill in `CHANGELOG.md` before you push** — the workflow copies that section
+> into the release notes, so a leftover placeholder would be published.
+
 ---
 
 ## 6. The app icon

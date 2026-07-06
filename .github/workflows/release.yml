@@ -1,0 +1,71 @@
+name: Release
+
+# Builds the Windows portable exe and publishes a GitHub Release automatically
+# whenever a version change is pushed to main (i.e. package.json changes).
+# If a release for that version already exists, it does nothing.
+
+on:
+  push:
+    branches: [main]
+    paths: ['package.json']
+  workflow_dispatch: {} # also allow running it manually from the Actions tab
+
+permissions:
+  contents: write # needed to create tags and releases
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Read version from package.json
+        id: ver
+        shell: bash
+        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Skip if this release already exists
+        id: check
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view "v${{ steps.ver.outputs.version }}" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Release v${{ steps.ver.outputs.version }} already exists — nothing to do."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install dependencies
+        if: steps.check.outputs.exists == 'false'
+        run: npm ci
+
+      - name: Build portable exe
+        if: steps.check.outputs.exists == 'false'
+        run: npm run dist:portable
+
+      - name: Generate release notes from CHANGELOG
+        if: steps.check.outputs.exists == 'false'
+        shell: bash
+        run: node scripts/changelog-notes.js "${{ steps.ver.outputs.version }}" > release-notes.md
+
+      - name: Create GitHub Release
+        if: steps.check.outputs.exists == 'false'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "v${{ steps.ver.outputs.version }}" release/*-portable.exe \
+            --title "Pomo Electron ${{ steps.ver.outputs.version }}" \
+            --notes-file release-notes.md \
+            --latest
