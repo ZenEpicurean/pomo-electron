@@ -26,7 +26,7 @@ function createWindow() {
     // the web content area itself, not counting the OS title bar/borders.
     useContentSize: true,
     width: 380,
-    height: 515,
+    height: 575,
     resizable: false,
     maximizable: false,
     fullscreenable: false,

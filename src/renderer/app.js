@@ -102,7 +102,8 @@ function trackStats(s) {
     s.workHoursRemainingMs != null &&
     s.workHoursRemainingMs < lastWorkRemaining
   ) {
-    window.PomoStats.addWork(lastWorkRemaining - s.workHoursRemainingMs);
+    const levelUp = window.PomoStats.addWork(lastWorkRemaining - s.workHoursRemainingMs);
+    if (levelUp) showToast('⚔ ' + levelUp.name + ' reached Level ' + levelUp.toLevel + '!');
   }
   lastWorkRemaining = s.workHoursRemainingMs;
 
@@ -115,6 +116,32 @@ function trackStats(s) {
     window.PomoStats.addSession();
   }
   prevPhase = s.phase;
+}
+
+// Brief level-up notification.
+let toastTimer = null;
+function showToast(text) {
+  const el = $('#levelup-toast');
+  if (!el) return;
+  el.textContent = text;
+  show(el);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => hide(el), 3500);
+}
+
+// Live active-skill banner on the timer screen.
+function renderSkillBanner() {
+  const banner = $('#skill-banner');
+  const sk = window.PomoStats && window.PomoStats.activeSkill();
+  if (!sk) {
+    hide(banner);
+    return;
+  }
+  $('#skill-banner-name').textContent = sk.name;
+  $('#skill-banner-level').textContent = 'Lv ' + sk.level;
+  $('#skill-banner-xp').style.width = Math.round(sk.pct * 100) + '%';
+  $('#skill-banner-xptext').textContent = sk.intoLevel + ' / ' + sk.span + ' XP  ·  ' + sk.toNext + ' to next';
+  show(banner);
 }
 
 function render(s) {
@@ -130,6 +157,8 @@ function render(s) {
   toggleScreen('#done-screen', onDone);
 
   if (!onTimer) return;
+
+  renderSkillBanner();
 
   const seg = s.segment;
 
@@ -440,15 +469,129 @@ statsModal.addEventListener('click', (e) => {
   if (e.target === statsModal) closeStats();
 });
 
+// ---------------------------------------------------------------------------
+// Skills / XP — activity picker + "character sheet" modal.
+// ---------------------------------------------------------------------------
+const skillsModal = $('#skills-modal');
+
+// Populate the config-screen "Activity" dropdown from the saved skills.
+function refreshActivitySelect() {
+  const sel = $('#activity-select');
+  if (!sel || !window.PomoStats) return;
+  const skills = window.PomoStats.skills();
+  const activeId = window.PomoStats.getActiveSkillId();
+  sel.innerHTML = skills
+    .map(
+      (s) =>
+        '<option value="' + s.id + '"' + (s.id === activeId ? ' selected' : '') + '>' +
+        escapeHtmlText(s.name) + ' (Lv ' + s.level + ')</option>'
+    )
+    .join('');
+  if (skills.length === 0) {
+    sel.innerHTML = '<option value="">No skills — add one ▸</option>';
+  }
+}
+
+function escapeHtmlText(t) {
+  return String(t).replace(/[&<>"]/g, (c) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+}
+
+$('#activity-select').addEventListener('change', (e) => {
+  if (e.target.value) window.PomoStats.setActiveSkill(e.target.value);
+});
+
+// Render the character-sheet list of skills with levels + XP bars.
+function renderSkillsList() {
+  const list = $('#skills-list');
+  if (!window.PomoStats) return;
+  const skills = window.PomoStats.skills();
+  const activeId = window.PomoStats.getActiveSkillId();
+  if (skills.length === 0) {
+    list.innerHTML = '<div class="stat-weeks-empty">No skills yet — add one below.</div>';
+    return;
+  }
+  list.innerHTML = skills
+    .map((s) => {
+      const isActive = s.id === activeId;
+      const activeCtrl = isActive
+        ? '<span class="active-tag">● active</span>'
+        : '<button class="set-active" data-skill="' + s.id + '">Set active</button>';
+      return (
+        '<div class="skill-row' + (isActive ? ' active' : '') + '">' +
+        '<div class="skill-row-head">' +
+        '<span class="skill-row-name">' + escapeHtmlText(s.name) + '</span>' +
+        '<span class="skill-level">Lv ' + s.level + '</span>' +
+        '<span class="skill-row-actions">' + activeCtrl +
+        '<button class="del-skill" data-skill="' + s.id + '" title="Delete">✕</button>' +
+        '</span></div>' +
+        '<span class="xp-bar"><span class="xp-fill" style="width:' + Math.round(s.pct * 100) + '%"></span></span>' +
+        '<div class="skill-row-xptext"><span>' + s.xp + ' XP · ' + fmtHuman(s.focusMs) + ' focused</span>' +
+        '<span>' + s.toNext + ' to Lv ' + (s.level + 1) + '</span></div>' +
+        '</div>'
+      );
+    })
+    .join('');
+}
+
+function afterSkillChange() {
+  renderSkillsList();
+  refreshActivitySelect();
+  if (engine.snapshot().phase !== Phase.IDLE) renderSkillBanner();
+}
+
+function openSkills() { renderSkillsList(); show(skillsModal); }
+function closeSkills() { hide(skillsModal); }
+
+$('#open-skills').addEventListener('click', openSkills);
+$('#manage-skills').addEventListener('click', openSkills);
+$('#skills-close').addEventListener('click', closeSkills);
+skillsModal.addEventListener('click', (e) => {
+  if (e.target === skillsModal) closeSkills();
+});
+
+// Add skill.
+function submitNewSkill() {
+  const input = $('#new-skill-name');
+  const id = window.PomoStats.addSkill(input.value);
+  if (id) {
+    input.value = '';
+    window.PomoStats.setActiveSkill(id);
+    afterSkillChange();
+  }
+}
+$('#add-skill-btn').addEventListener('click', submitNewSkill);
+$('#new-skill-name').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    submitNewSkill();
+  }
+});
+
+// Set-active / delete via event delegation inside the skills list.
+$('#skills-list').addEventListener('click', (e) => {
+  const setBtn = e.target.closest('.set-active');
+  const delBtn = e.target.closest('.del-skill');
+  if (setBtn) {
+    window.PomoStats.setActiveSkill(setBtn.dataset.skill);
+    afterSkillChange();
+  } else if (delBtn) {
+    window.PomoStats.deleteSkill(delBtn.dataset.skill);
+    afterSkillChange();
+  }
+});
+
 // Escape closes whichever modal is open.
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     closeChangelog();
     closeStats();
+    closeSkills();
   }
 });
 
-// Initial paint (config screen).
+// Initial paint (config screen) + populate the activity picker.
+refreshActivitySelect();
 render(engine.snapshot());
 
 })();

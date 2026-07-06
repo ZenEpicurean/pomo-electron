@@ -13,7 +13,7 @@ Pomo-Electron/
 │     ├─ index.html      Page structure: config / timer / done screens
 │     ├─ styles.css      All styling + theme variables (top of file)
 │     ├─ engine.js       TimerEngine: ALL the Pomodoro logic (no DOM)
-│     ├─ stats.js        PomoStats: focus stats saved in localStorage
+│     ├─ stats.js        PomoStats: focus stats + skills/XP saved in localStorage
 │     └─ app.js          Glue: reads the form, renders state, handles keys
 ├─ build/
 │  ├─ icon.ico / icon.png  App icon (exe + window)
@@ -71,6 +71,7 @@ segment hits zero.
 | Change app name / version / build targets              | `package.json`                                           |
 | Add a release note / version history entry             | `CHANGELOG.md` (see BUILD.md §5)                          |
 | Change what focus stats are tracked / stored           | `src/renderer/stats.js` (localStorage, userData-backed)  |
+| Tune the XP rate or level curve                         | `src/renderer/stats.js` (`XP_MS_PER_POINT`, `cumXpForLevel`) |
 
 ## Adding a native feature (IPC pattern)
 

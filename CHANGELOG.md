@@ -9,6 +9,16 @@ features, **PATCH** for fixes.
 Entries are intentionally kept high-level and user-facing (no internal or
 security-sensitive detail). Newest version on top.
 
+## [1.5.0] — 2026-07-06
+
+### Added
+- Skills & XP — turn focus time into RPG-style progress. Create skills (you
+  start with **Coding** and **Exercise**), pick one as your session's activity
+  on the start screen, and earn XP as you work — 10 XP per focused minute — to
+  level each skill up. A new **Skills** character sheet in the footer shows your
+  levels and XP, the timer shows your active skill's XP climbing live, and you
+  get a cheer when you rank up.
+
 ## [1.4.0] — 2026-07-06
 
 ### Added

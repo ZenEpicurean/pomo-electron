@@ -387,6 +387,188 @@ kbd {
   margin: 0 0 6px;
 }
 
+/* ---------- Activity picker (config screen) ---------- */
+.activity-field {
+  margin-top: 12px;
+}
+.activity-field > label {
+  font-size: 11px;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 4px;
+}
+.activity-row {
+  display: flex;
+  gap: 8px;
+}
+select {
+  flex: 1;
+  background: var(--card-2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--text);
+  padding: 7px 8px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+}
+select:focus {
+  border-color: var(--accent);
+}
+button.mini {
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  font-size: 12px;
+}
+
+/* ---------- XP bars (shared) ---------- */
+.xp-bar {
+  display: block;
+  height: 7px;
+  background: var(--card-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.xp-fill {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #b58cff, #7c4dff);
+  transition: width 0.4s linear;
+}
+
+/* ---------- Active-skill banner (timer screen) ---------- */
+.skill-banner {
+  margin: 4px 0 2px;
+}
+.skill-banner-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 3px;
+}
+#skill-banner-name {
+  font-size: 13px;
+  font-weight: 600;
+}
+.skill-level {
+  font-size: 11px;
+  font-weight: 700;
+  color: #b58cff;
+  background: rgba(124, 77, 255, 0.15);
+  padding: 1px 7px;
+  border-radius: 999px;
+}
+.skill-xptext {
+  display: block;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* ---------- Skills modal (character sheet) ---------- */
+#skills-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.skill-row {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+.skill-row.active {
+  border-color: #7c4dff;
+  background: rgba(124, 77, 255, 0.08);
+}
+.skill-row-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+.skill-row-name {
+  font-size: 13px;
+  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.skill-row-actions {
+  display: flex;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+.skill-row-actions button {
+  padding: 3px 8px;
+  font-size: 11px;
+}
+.skill-row-actions .set-active {
+  color: #b58cff;
+  border-color: #7c4dff;
+}
+.skill-row-actions .active-tag {
+  font-size: 11px;
+  color: #b58cff;
+  padding: 3px 8px;
+}
+.skill-row-xptext {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 3px;
+  display: flex;
+  justify-content: space-between;
+}
+.add-skill-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+.add-skill-row input {
+  flex: 1;
+  background: var(--card-2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--text);
+  padding: 7px 9px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+}
+.add-skill-row input:focus {
+  border-color: var(--accent);
+}
+.add-skill-row button {
+  flex: 0 0 auto;
+}
+.skills-hint {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 10px 0 0;
+  text-align: center;
+}
+
+/* ---------- Level-up toast ---------- */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 40px;
+  transform: translateX(-50%);
+  background: #7c4dff;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 9px 16px;
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+  z-index: 80;
+}
+
 /* ---------- Footer ---------- */
 .footer {
   text-align: center;

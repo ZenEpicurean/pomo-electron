@@ -52,6 +52,14 @@
             </label>
           </div>
 
+          <div class="activity-field">
+            <label for="activity-select">Activity (earns XP for…)</label>
+            <div class="activity-row">
+              <select id="activity-select"></select>
+              <button id="manage-skills" type="button" class="mini">⚔ Skills</button>
+            </div>
+          </div>
+
           <p id="config-error" class="error" hidden></p>
 
           <button id="btn-start" class="primary big">Start session ▶</button>
@@ -74,6 +82,15 @@
       <section id="timer-screen" class="screen" hidden>
         <div class="card timer-card">
           <div id="segment-label" class="segment-label">Work Session #1</div>
+
+          <div id="skill-banner" class="skill-banner" hidden>
+            <span class="skill-banner-top">
+              <span id="skill-banner-name">Coding</span>
+              <span id="skill-banner-level" class="skill-level">Lv 1</span>
+            </span>
+            <span class="xp-bar"><span id="skill-banner-xp" class="xp-fill"></span></span>
+            <span id="skill-banner-xptext" class="skill-xptext">0 / 100 XP</span>
+          </div>
 
           <div id="big-time" class="big-time">25:00</div>
           <div id="paused-badge" class="badge" hidden>PAUSED</div>
@@ -137,9 +154,13 @@
 
       <footer class="footer">
         <span id="version">v…</span>
+        <button id="open-skills" class="link">Skills</button>
         <button id="open-stats" class="link">Stats</button>
         <button id="whats-new" class="link" hidden>What's new</button>
       </footer>
+
+      <!-- Level-up toast -->
+      <div id="levelup-toast" class="toast" hidden></div>
 
       <!-- ============ WHAT'S NEW MODAL ============ -->
       <div id="changelog-modal" class="modal" hidden>
@@ -170,6 +191,32 @@
               All time: <span id="stat-lifetime-time">0m</span>
               · <span id="stat-lifetime-sessions">0 sessions</span>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ SKILLS MODAL (character sheet) ============ -->
+      <div id="skills-modal" class="modal" hidden>
+        <div class="modal-card">
+          <div class="modal-head">
+            <strong>⚔ Skills</strong>
+            <button id="skills-close" class="modal-close" title="Close">✕</button>
+          </div>
+          <div class="modal-body">
+            <div id="skills-list"></div>
+            <div class="add-skill-row">
+              <input
+                id="new-skill-name"
+                type="text"
+                maxlength="24"
+                placeholder="Add a skill (e.g. Writing)"
+              />
+              <button id="add-skill-btn" type="button" class="primary">Add</button>
+            </div>
+            <p class="skills-hint">
+              Pick a skill on the start screen, then focused work time levels it
+              up (10 XP per minute).
+            </p>
           </div>
         </div>
       </div>
