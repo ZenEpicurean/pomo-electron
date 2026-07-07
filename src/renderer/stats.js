@@ -167,6 +167,13 @@
         this._save();
       }
     },
+    // Zero every skill's XP/level (keeps the skills themselves and their names).
+    resetSkillProgress() {
+      Object.keys(this.data.skills).forEach((id) => {
+        this.data.skills[id].focusMs = 0;
+      });
+      this._save();
+    },
     getActiveSkillId() {
       return this.data.activeSkillId;
     },

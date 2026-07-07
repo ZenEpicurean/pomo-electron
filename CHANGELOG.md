@@ -9,6 +9,12 @@ features, **PATCH** for fixes.
 Entries are intentionally kept high-level and user-facing (no internal or
 security-sensitive detail). Newest version on top.
 
+## [1.5.1] — 2026-07-06
+
+### Added
+- A **Reset skill progress** button in the Skills panel (with a confirm step)
+  that clears all XP and levels back to the start while keeping your skills.
+
 ## [1.5.0] — 2026-07-06
 
 ### Added

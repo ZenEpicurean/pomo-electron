@@ -540,7 +540,12 @@ function afterSkillChange() {
   if (engine.snapshot().phase !== Phase.IDLE) renderSkillBanner();
 }
 
-function openSkills() { renderSkillsList(); show(skillsModal); }
+// Show the reset link, hide the "are you sure?" confirm row.
+function resetConfirmState() {
+  show($('#reset-skills'));
+  hide($('#reset-confirm'));
+}
+function openSkills() { resetConfirmState(); renderSkillsList(); show(skillsModal); }
 function closeSkills() { hide(skillsModal); }
 
 $('#open-skills').addEventListener('click', openSkills);
@@ -579,6 +584,18 @@ $('#skills-list').addEventListener('click', (e) => {
     window.PomoStats.deleteSkill(delBtn.dataset.skill);
     afterSkillChange();
   }
+});
+
+// Reset skill progress (two-step confirm).
+$('#reset-skills').addEventListener('click', () => {
+  hide($('#reset-skills'));
+  show($('#reset-confirm'));
+});
+$('#reset-no').addEventListener('click', resetConfirmState);
+$('#reset-yes').addEventListener('click', () => {
+  window.PomoStats.resetSkillProgress();
+  afterSkillChange();
+  resetConfirmState();
 });
 
 // Escape closes whichever modal is open.
